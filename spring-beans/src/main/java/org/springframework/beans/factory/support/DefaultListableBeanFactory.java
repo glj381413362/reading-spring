@@ -816,10 +816,11 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 			logger.trace("Pre-instantiating singletons in " + this);
 		}
 
-		// Iterate over a copy to allow for init methods which in turn register new bean definitions.
-		// While this may not be part of the regular factory bootstrap, it does otherwise work fine.
+		// 遍历一个副本,以便init方法反过来注册新的bean定义。
+		// 虽然这可能不是正规工厂的一部分引导,否则正常工作。
 		List<String> beanNames = new ArrayList<>(this.beanDefinitionNames);
 
+		//触发初始化所有非延迟的单例bean……
 		// Trigger initialization of all non-lazy singleton beans...
 		for (String beanName : beanNames) {
  			RootBeanDefinition bd = getMergedLocalBeanDefinition(beanName);
@@ -890,6 +891,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 			}
 		}
 
+		//首先从缓存中获取
 		BeanDefinition existingDefinition = this.beanDefinitionMap.get(beanName);
 		if (existingDefinition != null) {
 			if (!isAllowBeanDefinitionOverriding()) {
@@ -917,6 +919,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 							"] with [" + beanDefinition + "]");
 				}
 			}
+			//刷新缓存
 			this.beanDefinitionMap.put(beanName, beanDefinition);
 		}
 		else {
@@ -936,7 +939,8 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 				}
 			}
 			else {
-				// Still in startup registration phase
+				//还在启动注册阶段
+				// 将beanDefinition 缓存
 				this.beanDefinitionMap.put(beanName, beanDefinition);
 				this.beanDefinitionNames.add(beanName);
 				this.manualSingletonNames.remove(beanName);
